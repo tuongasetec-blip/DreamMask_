@@ -9,7 +9,7 @@ http.createServer((req, res) => {
 });
 
 const CONFIG = {
-  host: 'pe.notmc.net',
+  host: 'sgp.notmc.net',
   port: 25565,
   username: 'DreamMask_',
   version: '1.21.10',
@@ -19,6 +19,7 @@ const CONFIG = {
 
 // Danh sách username được phép gửi lệnh
 const ALLOWED_USERS = ['Hypnos'];
+const BOT_NAME = 'DreamMask';
 
 function createBot() {
   const bot = mineflayer.createBot({
@@ -43,9 +44,10 @@ function createBot() {
     // Kiểm tra tin nhắn từ Discord và từ user được phép
     const isFromAllowedUser = ALLOWED_USERS.some(user => message.includes(user));
 
-    // DETECT LỆNH CHAT "offline" - CHỈ từ ALLOWED_USERS
-    if (isFromAllowedUser && message.includes('[Discord | Member]') && cleanMessage.includes('offline')) {
-      console.log(`[COMMAND] Thấy chat "offline" từ Hypnos → Bot tự disconnect!`);
+    // DETECT LỆNH CHAT "DreamMask offline" - CHỈ từ ALLOWED_USERS
+    if (isFromAllowedUser && message.includes('[Discord | Member]') && 
+        cleanMessage.includes(BOT_NAME.toLowerCase()) && cleanMessage.includes('offline')) {
+      console.log(`[COMMAND] Thấy chat "DreamMask offline" từ Hypnos → Bot tự disconnect!`);
       delayLong = true;
       bot.quit('Tắt theo lệnh chat từ Hypnos');
       return;
@@ -55,21 +57,21 @@ function createBot() {
     if (message.includes('[Discord | Member]') && isFromAllowedUser) {
       const msgLower = message.toLowerCase();
 
-      if (msgLower.includes('inv')) {
-        setTimeout(() => bot.chat('[inv]'), 2000);
-        console.log(`[COMMAND] Nhận lệnh [inv] từ Discord`);
+      if (msgLower.includes(BOT_NAME.toLowerCase()) && msgLower.includes('inv')) {
+        bot.chat('[inv]');
+        console.log(`[COMMAND] Nhận lệnh "DreamMask inv" từ Discord`);
       } 
-      else if (msgLower.includes('ping')) {
-        setTimeout(() => bot.chat('[ping]'), 2000);
-        console.log(`[COMMAND] Nhận lệnh [ping] từ Discord`);
+      else if (msgLower.includes(BOT_NAME.toLowerCase()) && msgLower.includes('ping')) {
+        bot.chat('[ping]');
+        console.log(`[COMMAND] Nhận lệnh "DreamMask ping" từ Discord`);
       } 
-      else if (msgLower.includes('item')) {
-        setTimeout(() => bot.chat('[i]'), 2000);
-        console.log(`[COMMAND] Nhận lệnh [i] từ Discord`);
+      else if (msgLower.includes(BOT_NAME.toLowerCase()) && msgLower.includes('item')) {
+        bot.chat('[i]');
+        console.log(`[COMMAND] Nhận lệnh "DreamMask item" từ Discord`);
       }
-      else if (msgLower.includes('money')) {
-        setTimeout(() => bot.chat('[m]'), 2000);
-        console.log(`[COMMAND] Nhận lệnh [m] từ Discord`);
+      else if (msgLower.includes(BOT_NAME.toLowerCase()) && msgLower.includes('money')) {
+        bot.chat('[m]');
+        console.log(`[COMMAND] Nhận lệnh "DreamMask money" từ Discord`);
       }
     }
 
@@ -107,14 +109,14 @@ function createBot() {
       setTimeout(() => {
         bot.chat(CONFIG.serverCommand);
         console.log(`[LOG] Đang chuyển sang Earth... Bot sẽ AFK tại đây.`);
-      }, 5000);
+      }, 10000);
     }, 2000);
   });
 
   // 3. XỬ LÝ DISCONNECT
   bot.on('end', () => {
     bot.removeAllListeners();
-    let reconnectDelay = 5000;
+    let reconnectDelay = 3000;
     if (delayLong) {
       reconnectDelay = 60000;
       console.log(`[DISCONNECT] Do lệnh chat offline từ Hypnos. Reconnect sau 60 giây...`);
