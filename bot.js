@@ -14,8 +14,11 @@ const CONFIG = {
   username: 'DreamMask_',
   version: '1.21.10',
   auth: 'offline',
-  serverCommand: '/server earth' // Chỉ dùng để về earth khi cần
+  serverCommand: '/server earth'
 };
+
+// Danh sách username được phép gửi lệnh
+const ALLOWED_USERS = ['Hypnos'];
 
 function createBot() {
   const bot = mineflayer.createBot({
@@ -27,7 +30,7 @@ function createBot() {
     checkTimeoutInterval: 90000,
   });
 
-  let delayLong = false; // Flag cho reconnect delay dài nếu do lệnh chat "Empty offline"
+  let delayLong = false;
 
   // 1. XỬ LÝ TIN NHẮN CHAT
   bot.on('message', (jsonMsg) => {
@@ -37,12 +40,37 @@ function createBot() {
     // Tạo bản tin đã loại bỏ ký tự màu để kiểm tra dễ hơn
     const cleanMessage = message.replace(/§[0-9a-fklmnor]/g, '').toLowerCase();
 
-    // DETECT LỆNH CHAT "Empty offline" (bạn chat thủ công để tắt tạm)
-    if (cleanMessage.includes('dreammask') && cleanMessage.includes('offline')) {
-      console.log(`[COMMAND] Thấy chat "Spelas offline" → Bot tự disconnect!`);
+    // Kiểm tra tin nhắn từ Discord và từ user được phép
+    const isFromAllowedUser = ALLOWED_USERS.some(user => message.includes(user));
+
+    // DETECT LỆNH CHAT "offline" - CHỈ từ ALLOWED_USERS
+    if (isFromAllowedUser && message.includes('[Discord | Member]') && cleanMessage.includes('offline')) {
+      console.log(`[COMMAND] Thấy chat "offline" từ Hypnos → Bot tự disconnect!`);
       delayLong = true;
-      bot.quit('Tắt theo lệnh chat "Spelas offline"');
-      return; // Dừng xử lý các phần khác
+      bot.quit('Tắt theo lệnh chat từ Hypnos');
+      return;
+    }
+
+    // Xử lý các lệnh khác từ Discord user được phép
+    if (message.includes('[Discord | Member]') && isFromAllowedUser) {
+      const msgLower = message.toLowerCase();
+
+      if (msgLower.includes('inv')) {
+        setTimeout(() => bot.chat('[inv]'), 2000);
+        console.log(`[COMMAND] Nhận lệnh [inv] từ Discord`);
+      } 
+      else if (msgLower.includes('ping')) {
+        setTimeout(() => bot.chat('[ping]'), 2000);
+        console.log(`[COMMAND] Nhận lệnh [ping] từ Discord`);
+      } 
+      else if (msgLower.includes('item')) {
+        setTimeout(() => bot.chat('[i]'), 2000);
+        console.log(`[COMMAND] Nhận lệnh [i] từ Discord`);
+      }
+      else if (msgLower.includes('money')) {
+        setTimeout(() => bot.chat('[m]'), 2000);
+        console.log(`[COMMAND] Nhận lệnh [m] từ Discord`);
+      }
     }
 
     // Tự động quay lại Earth khi bị văng về Lobby
@@ -70,7 +98,7 @@ function createBot() {
     }
   });
 
-  // 2. LOGIN & CHUYỂN SERVER (chỉ login + về earth, không home)
+  // 2. LOGIN & CHUYỂN SERVER
   bot.once('spawn', () => {
     console.log(`[LOG] Đã kết nối. Đang đợi 2s để Login...`);
     setTimeout(() => {
@@ -88,8 +116,8 @@ function createBot() {
     bot.removeAllListeners();
     let reconnectDelay = 5000;
     if (delayLong) {
-      reconnectDelay = 60000; // 60 giây nếu do lệnh "Empty offline"
-      console.log(`[DISCONNECT] Do lệnh chat "Empty offline". Reconnect sau 60 giây...`);
+      reconnectDelay = 60000;
+      console.log(`[DISCONNECT] Do lệnh chat offline từ Hypnos. Reconnect sau 60 giây...`);
       delayLong = false;
     } else {
       console.log(`[DISCONNECT] Bình thường. Reconnect sau 5 giây...`);
