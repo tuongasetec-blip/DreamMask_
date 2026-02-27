@@ -28,7 +28,7 @@ function createBot() {
     username: CONFIG.username,
     version: CONFIG.version,
     auth: CONFIG.auth,
-    checkTimeoutInterval: 90000,
+    checkTimeoutInterval: 60000,
   });
 
   let delayLong = false;
