@@ -12,7 +12,7 @@ const CONFIG = {
   host: 'pe.notmc.net',
   port: 25565,
   username: 'DreamMask_',
-  version: '1.21.10',
+  version: '1.21.8',
   auth: 'offline',
   serverCommand: '/server earth'
 };
